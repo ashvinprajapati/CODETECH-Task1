@@ -1,0 +1,80 @@
+import re
+
+class PasswordStrengthChecker:
+    def __init__(self, password):
+        self.password = password
+        self.strength = 0
+        self.criteria = {
+            "length": False,
+            "uppercase": False,
+            "lowercase": False,
+            "digits": False,
+            "special_characters": False,
+            "no_common_patterns": False
+        }
+    def check_length(self):
+        if len(self.password) >= 8:
+            self.criteria["length"] = True
+            self.strength += 1
+    
+    def check_uppercase(self):
+        if re.search(r'[A-Z]', self.password):
+            self.criteria["uppercase"] = True
+            self.strength += 1
+            
+    def check_lowercase(self):
+        if re.search(r'[a-z]', self.password):
+            self.criteria["lowercase"] = True
+            self.strength += 1
+            
+    def check_digits(self):
+        if re.search(r'[0-9]', self.password):
+            self.criteria["digits"] = True
+            self.strength += 1
+            
+    def check_special_characters(self):
+        if re.search(r'[\W_]', self.password):
+            self.criteria["special_characters"] = True
+            self.strength += 1
+            
+    def check_common_patterns(self):
+        common_patterns = [
+            "password", "123456", "123456789", "qwerty", "abc123", "password1",
+            "111111", "123123", "12345", "12345678", "1234567", "sunshine",
+            "iloveyou", "princess", "admin", "welcome", "666666", "football",
+            "1234", "login", "admin", "passw0rd", "letmein"
+        ]
+        if not any(pattern in self.password.lower() for pattern in common_patterns):
+            self.criteria["no_common_patterns"] = True
+            self.strength += 1
+            
+    def evaluate_password(self):
+        self.check_length()
+        self.check_uppercase()
+        self.check_lowercase()
+        self.check_digits()
+        self.check_special_characters()
+        self.check_common_patterns()
+        
+        return self.strength, self.criteria
+
+    def get_strength_message(self):
+        messages = [
+            "Very Weak",
+            "Weak",
+            "Moderate",
+            "Strong",
+            "Very Strong",
+            "Extremely Strong"
+        ]
+        return messages[self.strength]
+
+password = input("Enter a password to check its strength: ")
+checker = PasswordStrengthChecker(password)
+strength, criteria = checker.evaluate_password()
+
+print(f"Password Strength: {checker.get_strength_message()}")
+print("Criteria met:")
+for criterion, met in criteria.items():
+    print(f"  {criterion.replace('_', ' ').capitalize()}: {'Yes' if met else 'No'}")
+
